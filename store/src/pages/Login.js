@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Login.css";
-import users from '../userss.json'; // Import user data
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -16,16 +16,18 @@ export default function Login() {
     return email.length > 0 && password.length > 0;
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
-    // Find the user in the user.json file based on the entered email
-    const user = users.find((user) => user.email === email);
+    try {
+      // Send login request to the server
+      const response = await axios.post("https://ecommerce-registeration-service.azurewebsites.net/login", { email, password });
 
-    if (user && user.password === password) {
-      // Successful login
-      navigate("/otp-verification");
-    } else {
+      // If login is successful, navigate to OTP verification page
+      if (response.status === 200) {
+        navigate("/otp-verification");
+      }
+    } catch (error) {
       setError("Wrong credentials. Please try again.");
     }
   }

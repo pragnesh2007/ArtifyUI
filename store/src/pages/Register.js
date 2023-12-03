@@ -1,12 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import './Register.css'; // Import your custom CSS file
-import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
+import './Register.css';
+import { useNavigate } from "react-router-dom";
 
 function RegistrationForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // Initialize the navigate function
+  const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios.get("https://ecommerce-registeration-service.azurewebsites.net/getUsersData")
+      .then((response) => {
+        setUsers(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   const handleRegistration = () => {
     axios.post("https://ecommerce-registeration-service.azurewebsites.net/register", { email, password })
@@ -14,8 +25,8 @@ function RegistrationForm() {
         console.log(response.data);
 
         if (response.data.message === "Registration successful") {
-          // Redirect to the login page after successful registration
-          navigate("/login"); // Replace with the actual login route
+          setUsers(response.data.users);
+          navigate("/login");
         }
       })
       .catch((error) => {
@@ -47,6 +58,15 @@ function RegistrationForm() {
       <button className="register-button" onClick={handleRegistration}>
         Register
       </button>
+
+      <div className="user-list">
+        <h2>Registered Users:</h2>
+        <ul>
+          {users.map((user, index) => (
+            <li key={index}>{user.email}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
