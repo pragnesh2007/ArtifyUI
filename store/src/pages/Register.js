@@ -9,7 +9,7 @@ function RegistrationForm() {
   const navigate = useNavigate(); // Initialize the navigate function
 
   const handleRegistration = () => {
-    axios.post("http://localhost:5001/register", { email, password })
+    axios.post("https://ecommerce-registeration-service.azurewebsites.net/register", { email, password })
       .then((response) => {
         console.log(response.data);
 
